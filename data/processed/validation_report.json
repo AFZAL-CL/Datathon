@@ -1,0 +1,42 @@
+{
+  "rows_before": 4424,
+  "rows_after": 4424,
+  "cols_before": 37,
+  "cols_after": 37,
+  "nulls_before": 0,
+  "nulls_after": 0,
+  "duplicates_before": 0,
+  "duplicates_after": 0,
+  "missing_required_columns": [],
+  "unexpected_extra_columns": [],
+  "columns_stripped": [
+    [
+      "Daytime/evening attendance\t",
+      "Daytime/evening attendance"
+    ]
+  ],
+  "columns_renamed": {
+    "Nacionality": "Nationality"
+  },
+  "binary_validation_issues": {},
+  "range_validation_issues": {},
+  "categorical_validation_issues": {},
+  "impossible_value_checks": {},
+  "target_distribution": {
+    "Graduate": {
+      "count": 2209,
+      "pct": 49.93
+    },
+    "Dropout": {
+      "count": 1421,
+      "pct": 32.12
+    },
+    "Enrolled": {
+      "count": 794,
+      "pct": 17.95
+    }
+  },
+  "failures": [],
+  "warnings": [],
+  "status": "PASS"
+}

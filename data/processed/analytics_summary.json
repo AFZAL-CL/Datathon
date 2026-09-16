@@ -1,0 +1,106 @@
+{
+  "overall": {
+    "total_students": 4424,
+    "graduate_count": 2209,
+    "dropout_count": 1421,
+    "enrolled_count": 794,
+    "dropout_rate": 32.12,
+    "graduate_rate": 49.93
+  },
+  "gender": {
+    "male_count": 1556,
+    "female_count": 2868,
+    "male_dropout_pct": 45.05,
+    "female_dropout_pct": 25.1,
+    "male_graduate_pct": 35.22,
+    "female_graduate_pct": 57.91,
+    "note": "Gender=1 is male, Gender=0 is female per UCI codebook."
+  },
+  "scholarship": {
+    "scholarship_n": 1099,
+    "non_scholarship_n": 3325,
+    "scholarship_dropout_pct": 12.19,
+    "non_scholarship_dropout_pct": 38.71,
+    "scholarship_graduate_pct": 75.98
+  },
+  "tuition": {
+    "tuition_current_n": 3896,
+    "tuition_overdue_n": 528,
+    "overdue_dropout_pct": 86.55,
+    "current_dropout_pct": 24.74,
+    "overdue_graduate_pct": 5.49,
+    "current_graduate_pct": 55.95
+  },
+  "debtor": {
+    "debtor_n": 503,
+    "non_debtor_n": 3921,
+    "debtor_dropout_pct": 62.03,
+    "debtor_graduate_pct": 20.08,
+    "non_debtor_dropout_pct": 28.28
+  },
+  "age": {
+    "median_age": 20.0,
+    "p75_age": 25.0,
+    "mature_student_dropout_pct": 40.94,
+    "young_student_dropout_pct": 20.95
+  },
+  "displaced": {
+    "displaced_n": 2426,
+    "non_displaced_n": 1998,
+    "displaced_dropout_pct": 27.58,
+    "non_displaced_dropout_pct": 37.64
+  },
+  "academic_performance": {
+    "Curricular units 1st sem (grade)": {
+      "Graduate": {
+        "mean": 12.644,
+        "std": 2.699
+      },
+      "Dropout": {
+        "mean": 7.257,
+        "std": 6.031
+      },
+      "Enrolled": {
+        "mean": 11.125,
+        "std": 3.675
+      }
+    },
+    "Curricular units 2nd sem (grade)": {
+      "Graduate": {
+        "mean": 12.697,
+        "std": 2.686
+      },
+      "Dropout": {
+        "mean": 5.899,
+        "std": 6.119
+      },
+      "Enrolled": {
+        "mean": 11.117,
+        "std": 3.601
+      }
+    }
+  },
+  "macro_economics": {
+    "Unemployment rate": {
+      "overall_mean": 11.5661,
+      "overall_unique_vals": 10,
+      "dropout_mean": 11.6164,
+      "graduate_mean": 11.6393,
+      "limitation": "This is a national quarterly indicator shared across all students enrolled in the same period. Its variance may reflect cohort timing rather than individual risk. Use with caution in predictive models."
+    },
+    "Inflation rate": {
+      "overall_mean": 1.228,
+      "overall_unique_vals": 9,
+      "dropout_mean": 1.284,
+      "graduate_mean": 1.1979,
+      "limitation": "This is a national quarterly indicator shared across all students enrolled in the same period. Its variance may reflect cohort timing rather than individual risk. Use with caution in predictive models."
+    },
+    "GDP": {
+      "overall_mean": 0.002,
+      "overall_unique_vals": 10,
+      "dropout_mean": -0.1509,
+      "graduate_mean": 0.0818,
+      "limitation": "This is a national quarterly indicator shared across all students enrolled in the same period. Its variance may reflect cohort timing rather than individual risk. Use with caution in predictive models."
+    }
+  }
+}

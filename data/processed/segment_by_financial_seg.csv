@@ -1,0 +1,5 @@
+financial_segment,Graduate,Dropout,Enrolled,Graduate_pct,Dropout_pct,Enrolled_pct,total
+Financial Risk,69,512,97,10.18,75.52,14.31,678
+"Scholarship, At Risk",50,42,15,46.73,39.25,14.02,107
+"Scholarship, No Debt",785,92,115,79.13,9.27,11.59,992
+Stable (No Scholarship),1305,775,567,49.3,29.28,21.42,2647

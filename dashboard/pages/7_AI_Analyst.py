@@ -16,81 +16,88 @@ if df.empty:
     st.error("Data could not be loaded.")
     st.stop()
 
-# We need the early df for early admission risk queries
 early_df = meta.get("early", df)
 
 selections = render_global_filters(df)
 filtered_df = apply_filters(df, selections)
 filtered_early = apply_filters(early_df, selections)
 
-page_header("EDUPULSE AI Analyst", "Ask questions about student retention, academic performance, and risk in natural language.")
+page_header(
+    title="Ask the dataset.",
+    subtitle="Natural-language interface to the EDUPULSE intelligence pipeline.",
+    eyebrow="EDUPULSE AI ANALYST"
+)
 
 st.markdown("""
-<div class="notice">
-<strong>Note:</strong> Analysis uses the currently selected dashboard filters. 
-I can analyze student outcomes, academic performance, financial/support indicators, admission attributes, and the two EDUPULSE risk scenarios.
+<div style="background:var(--surface); border:1px solid var(--border); padding:1rem 1.5rem; border-radius:var(--radius-md); font-size:0.9rem; color:var(--text-secondary); margin-bottom:2rem; display:flex; align-items:center; gap:1rem; animation: slideUpFade 600ms var(--transition-med) both;">
+    <span style="color:var(--accent-primary);">⚡</span>
+    <span>Analysis is bounded to the currently selected global filters and respects dataset boundaries.</span>
 </div>
 """, unsafe_allow_html=True)
-st.markdown("---")
 
-# Session state for queries
 if "ai_queries" not in st.session_state:
     st.session_state.ai_queries = []
 
-# Suggested questions
-st.markdown("### Suggested questions:")
+st.markdown('<div style="font-weight:700; color:var(--text-primary); margin-bottom:1rem; font-size:1.1rem;">Suggested Queries</div>', unsafe_allow_html=True)
+
 suggested = [
     "Which courses have the highest dropout rate?",
-    "Show dropout by age group.",
-    "Compare scholarship and non-scholarship students.",
     "Show current academic risk by course.",
-    "Compare second-semester grades by outcome.",
-    "Show graduation rate by course."
+    "Compare scholarship and non-scholarship outcomes.",
+    "How does academic progress vary by outcome?"
 ]
 
-cols = st.columns(len(suggested[:3]))
-for i, q in enumerate(suggested[:3]):
-    if cols[i].button(q, key=f"sug_{i}"):
-        st.session_state.current_query = q
-        
-cols2 = st.columns(len(suggested[3:]))
-for i, q in enumerate(suggested[3:]):
-    if cols2[i].button(q, key=f"sug_{i+3}"):
+# Render elegant query chips
+cols = st.columns(4)
+for i, q in enumerate(suggested):
+    if cols[i].button(q, key=f"sug_{i}", use_container_width=True):
         st.session_state.current_query = q
 
-query = st.text_input("What would you like to analyze?", key="current_query")
+st.markdown("<br/>", unsafe_allow_html=True)
+query = st.text_input("What would you like to understand?", key="current_query", placeholder="e.g., Show dropout by age group...")
 
 if query:
     if query not in st.session_state.ai_queries:
         st.session_state.ai_queries.append(query)
         
-    with st.spinner("Analyzing..."):
-        # Process the query
+    with st.spinner("Analyzing data..."):
         parser = IntentParser()
         try:
             spec = parser.parse(query)
-            
             engine = QueryEngine(filtered_df, filtered_early)
             result_df = engine.execute(spec)
             
             if result_df.empty:
-                st.warning("No records match the requested criteria or the query is unsupported for the current filters.")
+                st.markdown("""
+                <div style="padding:2rem; background:var(--surface); border:1px dashed var(--risk); border-radius:var(--radius-md); margin-top:2rem; text-align:center;">
+                    <div style="color:var(--risk); margin-bottom:0.5rem; font-weight:600;">No Results</div>
+                    <div style="color:var(--text-secondary); font-size:0.9rem;">The query returned no data for the current filters.</div>
+                </div>
+                """, unsafe_allow_html=True)
             else:
-                st.markdown("### Analysis")
+                st.markdown('<div style="margin-top:3rem; margin-bottom:1.5rem; font-weight:700; color:var(--accent-secondary); letter-spacing:0.1em; text-transform:uppercase; font-size:0.85rem;">Result Workspace</div>', unsafe_allow_html=True)
                 
                 chart_selector = ChartSelector()
                 fig = chart_selector.generate_chart(result_df, spec)
+                
+                # Render inside an editorial container
+                st.markdown('<div style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:2rem; animation: slideUpFade 800ms var(--transition-med) both;">', unsafe_allow_html=True)
                 
                 if fig:
                     st.plotly_chart(fig, use_container_width=True)
                 else:
                     st.dataframe(result_df, use_container_width=True)
                 
-                st.markdown("### Insight")
                 insight_gen = InsightGenerator()
                 insight = insight_gen.generate(result_df, spec)
                 
-                st.info(insight)
+                st.markdown(f"""
+                <div style="border-top:1px solid var(--border); margin-top:2rem; padding-top:1.5rem;">
+                    <div style="font-size:0.75rem; color:var(--text-secondary); text-transform:uppercase; font-weight:700; letter-spacing:0.05em; margin-bottom:0.5rem;">Synthesized Insight</div>
+                    <div style="font-size:1.1rem; color:var(--text-primary); line-height:1.6;">{insight}</div>
+                </div>
+                </div>
+                """, unsafe_allow_html=True)
                 
         except ValueError as e:
             if "UNSUPPORTED_INFRASTRUCTURE" in str(e):
@@ -101,7 +108,7 @@ if query:
             st.error(f"Failed to process query: {str(e)}")
 
 if st.session_state.ai_queries:
-    st.markdown("---")
-    with st.expander("Recent analyses", expanded=False):
+    st.markdown("<hr style='margin-top:4rem;'>", unsafe_allow_html=True)
+    with st.expander("Session History", expanded=False):
         for i, q in enumerate(reversed(st.session_state.ai_queries[-5:])):
-            st.write(f"{i+1}. {q}")
+            st.markdown(f'<div style="color:var(--text-secondary); margin-bottom:0.5rem; font-size:0.9rem;">{i+1}. {q}</div>', unsafe_allow_html=True)

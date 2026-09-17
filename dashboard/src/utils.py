@@ -6,29 +6,42 @@ def inject_css() -> None:
         css = f.read()
         st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
 
-def page_header(title: str, subtitle: str, eyebrow: str = "EDUPULSE") -> None:
-    """Renders a standard page header."""
-    st.markdown(f'<div class="eyebrow" style="color:var(--accent); font-size:0.75rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; margin-bottom:0.25rem;">{eyebrow}</div>', unsafe_allow_html=True)
-    st.markdown(f'<h1>{title}</h1>', unsafe_allow_html=True)
-    st.markdown(f'<div class="page-subtitle">{subtitle}</div>', unsafe_allow_html=True)
+def page_header(title: str, subtitle: str, eyebrow: str = "EDUPULSE / INTELLIGENCE") -> None:
+    """Renders a premium editorial page header."""
+    st.markdown(f'<div class="eyebrow">{eyebrow}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="hero-title">{title}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="hero-subtitle">{subtitle}</div>', unsafe_allow_html=True)
 
 def kpi_row(items: list[tuple[str, str, str]]) -> None:
-    """Renders a row of KPI cards."""
-    cols = st.columns(len(items))
-    for col, (label, value, note) in zip(cols, items):
-        with col:
-            st.markdown(f'''
-            <div class="kpi-card">
-                <div class="kpi-label">{label}</div>
-                <div class="kpi-value">{value}</div>
-                <div class="kpi-note" style="color:var(--text-muted); font-size:0.75rem; margin-top:0.25rem;">{note}</div>
-            </div>
-            ''', unsafe_allow_html=True)
+    """Renders a row of staggered, animated KPI modules."""
+    html = '<div class="kpi-container">'
+    for label, value, note in items:
+        html += f'''
+        <div class="kpi-module">
+            <div class="kpi-label">{label}</div>
+            <div class="kpi-value">{value}</div>
+            <div class="kpi-note">{note}</div>
+        </div>
+        '''
+    html += '</div>'
+    st.markdown(html, unsafe_allow_html=True)
 
-def empty_state(message: str = "No records match the current filters.") -> None:
-    """Renders an empty state notice."""
-    st.markdown(f'<div class="empty-state">{message}</div>', unsafe_allow_html=True)
+def empty_state(message: str = "No records match the selected filters.") -> None:
+    """Renders an elegant empty state."""
+    st.markdown(f'''
+    <div style="padding:4rem; text-align:center; background:var(--surface); border:1px dashed var(--border); border-radius:var(--radius-lg); margin-top:2rem;">
+        <div style="font-size:2rem; margin-bottom:1rem; opacity:0.5;">📭</div>
+        <div style="color:var(--text-primary); font-weight:600; font-size:1.1rem; margin-bottom:0.5rem;">No Data in Current View</div>
+        <div style="color:var(--text-secondary);">{message}</div>
+    </div>
+    ''', unsafe_allow_html=True)
 
 def section_title(title: str, caption: str = "") -> None:
-    """Renders a section title."""
-    st.markdown(f'<div style="margin-top:2rem;"><h3>{title}</h3><div style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">{caption}</div></div>', unsafe_allow_html=True)
+    """Renders an editorial section title."""
+    st.markdown(f'<div class="section-title">{title}</div>', unsafe_allow_html=True)
+    if caption:
+        st.markdown(f'<div class="section-caption">{caption}</div>', unsafe_allow_html=True)
+        
+def insight_box(text: str, kind: str = "primary") -> None:
+    """Renders an insight box. kind: primary, warning, risk, success"""
+    st.markdown(f'<div class="insight-box {kind}">{text}</div>', unsafe_allow_html=True)

@@ -3,8 +3,9 @@ import plotly.express as px
 from dashboard.src.data_loader import load_data
 from dashboard.src.filters import render_global_filters, apply_filters
 from dashboard.src.utils import inject_css, page_header, empty_state, section_title
+from dashboard.src.ai.chart_selector import apply_premium_theme
 
-st.set_page_config(page_title="EDUPULSE | Academic Performance", page_icon="🎓", layout="wide")
+st.set_page_config(page_title="EDUPULSE | Academic Performance", page_icon="📚", layout="wide")
 inject_css()
 
 df, meta = load_data()
@@ -15,74 +16,73 @@ if df.empty:
 selections = render_global_filters(df)
 filtered_df = apply_filters(df, selections)
 
-page_header("Academic Performance", "Relationship between academic progress and recorded student outcomes.")
+page_header(
+    title="Academic Progress Workspace",
+    subtitle="Evaluate the relationship between academic engagement, performance, and retention.",
+    eyebrow="PERFORMANCE ANALYSIS"
+)
 
 if filtered_df.empty:
     empty_state()
     st.stop()
 
-# Helper aliases for variables
-g1 = "Curricular units 1st sem (grade)"
-g2 = "Curricular units 2nd sem (grade)"
-u1_eval = "Curricular units 1st sem (evaluations)"
-u2_eval = "Curricular units 2nd sem (evaluations)"
-u1_app = "Curricular units 1st sem (approved)"
-u2_app = "Curricular units 2nd sem (approved)"
+# Overall Academic Progress Metric
+avg_progress = filtered_df["f_b_academic_progress"].mean() if "f_b_academic_progress" in filtered_df.columns else 0
 
-col1, col2, col3 = st.columns(3)
+st.markdown(f"""
+<div style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:2rem; text-align:center; margin-bottom:2rem; animation: slideUpFade 600ms var(--transition-med) both;">
+    <div style="font-size:0.85rem; font-weight:700; color:var(--text-secondary); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:0.5rem;">Average Academic Progress</div>
+    <div style="font-size:3.5rem; font-weight:800; color:var(--accent-primary); font-family:'JetBrains Mono', monospace;">{avg_progress:.3f}</div>
+    <div style="font-size:0.9rem; color:var(--text-muted); margin-top:0.5rem;">Ratio of approved curricular units to enrolled units.</div>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("<hr>", unsafe_allow_html=True)
+
+section_title("Semester 1 vs Semester 2", "How do grades evolve across the first year?")
+
+if "Curricular units 1st sem (grade)" in filtered_df.columns and "Curricular units 2nd sem (grade)" in filtered_df.columns:
+    fig_scatter = px.scatter(
+        filtered_df, x="Curricular units 1st sem (grade)", y="Curricular units 2nd sem (grade)",
+        color="Target", opacity=0.7,
+        color_discrete_map={"Graduate": "#34D399", "Enrolled": "#FBBF24", "Dropout": "#FB7185"},
+        labels={"Curricular units 1st sem (grade)": "1st Semester Grade", "Curricular units 2nd sem (grade)": "2nd Semester Grade"}
+    )
+    
+    # Add a diagonal reference line
+    max_val = max(filtered_df["Curricular units 1st sem (grade)"].max(), filtered_df["Curricular units 2nd sem (grade)"].max())
+    fig_scatter.add_shape(type="line", x0=0, y0=0, x1=max_val, y1=max_val, line=dict(color="rgba(255,255,255,0.2)", dash="dash"))
+    
+    fig_scatter = apply_premium_theme(fig_scatter)
+    fig_scatter.update_layout(margin=dict(t=20, b=40, l=40, r=40))
+    st.plotly_chart(fig_scatter, use_container_width=True)
+
+st.markdown("<hr>", unsafe_allow_html=True)
+
+col1, col2 = st.columns(2, gap="large")
+
 with col1:
-    val = filtered_df[g1].mean() if g1 in filtered_df else 0
-    st.metric("Avg 1st Semester Grade", f"{val:.2f}" if val > 0 else "N/A")
-with col2:
-    val = filtered_df[g2].mean() if g2 in filtered_df else 0
-    st.metric("Avg 2nd Semester Grade", f"{val:.2f}" if val > 0 else "N/A")
-with col3:
-    if "f_b_academic_progress" in filtered_df.columns:
-        val = filtered_df["f_b_academic_progress"].mean() * 100
-        st.metric("Avg Academic Progress", f"{val:.1f}%")
-    elif "academic_progress" in filtered_df.columns:
-        val = filtered_df["academic_progress"].mean() * 100
-        st.metric("Avg Academic Progress", f"{val:.1f}%")
-
-st.markdown("---")
-
-colA, colB = st.columns(2)
-
-with colA:
-    if g1 in filtered_df.columns and g2 in filtered_df.columns:
-        section_title("1st vs 2nd Semester Performance", "Comparing grades across semesters")
-        fig1 = px.scatter(filtered_df, x=g1, y=g2, color="Target", 
-                          color_discrete_map={"Graduate": "#059669", "Enrolled": "#d97706", "Dropout": "#dc2626"},
-                          opacity=0.6, marginal_x="histogram", marginal_y="histogram")
-        st.plotly_chart(fig1, use_container_width=True)
-        st.info("Observation: Students who drop out typically show lower grades in both semesters or structural zeros indicating no exams taken.")
-
-with colB:
-    if "Target" in filtered_df.columns:
-        if u1_app in filtered_df.columns and u2_app in filtered_df.columns:
-            section_title("Approved Units by Outcome", "Total units approved across year 1")
-            filtered_df["Total_Approved"] = filtered_df[u1_app] + filtered_df[u2_app]
-            fig2 = px.box(filtered_df, x="Target", y="Total_Approved", color="Target",
-                          color_discrete_map={"Graduate": "#059669", "Enrolled": "#d97706", "Dropout": "#dc2626"})
-            st.plotly_chart(fig2, use_container_width=True)
-
-st.markdown("---")
-
-colC, colD = st.columns(2)
-
-with colC:
+    section_title("Grade Improvement", "Difference between 2nd and 1st semester grades by outcome")
     if "f_b_grade_improvement" in filtered_df.columns:
-        section_title("Grade Improvement Distribution", "Change in grade from 1st to 2nd semester")
-        fig3 = px.histogram(filtered_df, x="f_b_grade_improvement", color="Target", 
-                            color_discrete_map={"Graduate": "#059669", "Enrolled": "#d97706", "Dropout": "#dc2626"},
-                            barmode="overlay", opacity=0.7)
-        st.plotly_chart(fig3, use_container_width=True)
+        fig_box = px.box(
+            filtered_df, x="Target", y="f_b_grade_improvement",
+            color="Target", color_discrete_map={"Graduate": "#34D399", "Enrolled": "#FBBF24", "Dropout": "#FB7185"},
+            labels={"Target": "Outcome", "f_b_grade_improvement": "Grade Improvement"}
+        )
+        fig_box = apply_premium_theme(fig_box)
+        fig_box.update_layout(showlegend=False, margin=dict(t=20, b=40, l=40, r=20))
+        st.plotly_chart(fig_box, use_container_width=True)
 
-with colD:
-    if "Course Label" in filtered_df.columns and g1 in filtered_df.columns and g2 in filtered_df.columns:
-        section_title("Academic Performance by Course", "Average grades per course")
-        course_perf = filtered_df.groupby("Course Label")[[g1, g2]].mean().reset_index()
-        fig4 = px.bar(course_perf, x="Course Label", y=[g1, g2], barmode="group",
-                      labels={"value": "Average Grade", "variable": "Semester"})
-        fig4.update_layout(xaxis_tickangle=-45)
-        st.plotly_chart(fig4, use_container_width=True)
+with col2:
+    section_title("Evaluated vs Approved", "Units evaluated vs approved by outcome")
+    if "f_b_total_units_evaluated" in filtered_df.columns and "f_b_total_units_approved" in filtered_df.columns:
+        avg_units = filtered_df.groupby("Target")[["f_b_total_units_evaluated", "f_b_total_units_approved"]].mean().reset_index()
+        fig_bar = px.bar(
+            avg_units, x="Target", y=["f_b_total_units_evaluated", "f_b_total_units_approved"],
+            barmode="group",
+            labels={"value": "Average Units", "variable": "Metric", "Target": "Outcome"},
+            color_discrete_sequence=["#8B5CF6", "#0D9488"]
+        )
+        fig_bar = apply_premium_theme(fig_bar)
+        fig_bar.update_layout(margin=dict(t=20, b=40, l=40, r=20))
+        st.plotly_chart(fig_bar, use_container_width=True)

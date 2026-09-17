@@ -1,0 +1,151 @@
+/* EDUPULSE Dashboard CSS */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    --bg-main: #f8fafc;
+    --bg-card: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    --primary: #2563eb;
+    --primary-light: #dbeafe;
+    --accent: #0f766e;
+    
+    /* Outcomes */
+    --color-graduate: #059669;
+    --color-enrolled: #d97706;
+    --color-dropout: #dc2626;
+}
+
+html, body, [class*="css"] {
+    font-family: 'Inter', sans-serif;
+    color: var(--text-main);
+}
+
+.stApp {
+    background-color: var(--bg-main);
+}
+
+/* Sidebar styling */
+[data-testid="stSidebar"] {
+    background-color: #1e293b;
+    border-right: 1px solid #334155;
+}
+[data-testid="stSidebar"] * {
+    color: #f1f5f9 !important;
+}
+
+/* Brand header in sidebar */
+.brand-container {
+    padding: 1.5rem 0;
+    border-bottom: 1px solid #334155;
+    margin-bottom: 1.5rem;
+}
+.brand-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: #e2e8f0 !important;
+    text-transform: uppercase;
+}
+.brand-subtitle {
+    font-size: 0.75rem;
+    color: #94a3b8 !important;
+    margin-top: 0.25rem;
+}
+
+/* Headers */
+h1 {
+    font-weight: 800 !important;
+    letter-spacing: -0.025em !important;
+    color: #0f172a !important;
+    font-size: 2.25rem !important;
+    margin-bottom: 0.5rem !important;
+}
+h2 {
+    font-weight: 700 !important;
+    letter-spacing: -0.025em !important;
+    font-size: 1.5rem !important;
+    color: #1e293b !important;
+    margin-top: 2rem !important;
+}
+h3 {
+    font-weight: 600 !important;
+    font-size: 1.125rem !important;
+    color: #334155 !important;
+}
+
+.page-subtitle {
+    font-size: 1.125rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+    font-weight: 400;
+}
+
+/* KPI Cards */
+.kpi-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    height: 100%;
+}
+.kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+.kpi-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+.kpi-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-main);
+    line-height: 1.2;
+}
+
+/* Signal / Insights Box */
+.signal-box {
+    background-color: #f0fdf4;
+    border-left: 4px solid var(--color-graduate);
+    padding: 1rem 1.25rem;
+    border-radius: 0 8px 8px 0;
+    margin: 1rem 0;
+    color: #166534;
+    font-size: 0.95rem;
+}
+
+.empty-state {
+    padding: 3rem;
+    text-align: center;
+    background-color: var(--bg-card);
+    border: 1px dashed var(--text-muted);
+    border-radius: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+/* DataFrame styling overrides */
+[data-testid="stDataFrame"] {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Remove default metric padding */
+[data-testid="stMetricValue"] {
+    font-size: 1.8rem;
+}
+
+hr {
+    border-top: 1px solid var(--border-color);
+    margin: 2rem 0;
+}
